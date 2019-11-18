@@ -4,11 +4,11 @@
 #' @param TSL matrix of time series
 #' @param p number of lags in the VAR model
 #' @param W Matrix of exogenous regressors
-#' @return AL: Least-squares estimator of the VAR coefficients
-#' @return Sigma: Least-squares estimator of the VAR residuals
-#' @return eta: VAR model residuals
-#' @return X: Matrix of VAR covariates
-#' @return Y: VAR matrix of endogenous regressors
+#' @return AL Least-squares estimator of the VAR coefficients
+#' @return Sigma Least-squares estimator of the VAR residuals
+#' @return eta VAR model residuals
+#' @return X Matrix of VAR covariates
+#' @return Y VAR matrix of endogenous regressors
 #'
 #' If no exogenous regressors are specified, our estimation always includes a constant.
 #'

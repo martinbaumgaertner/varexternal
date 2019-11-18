@@ -14,15 +14,15 @@ RForm_VAR(TSL, p, W = NULL)
 \item{W}{Matrix of exogenous regressors}
 }
 \value{
-AL: Least-squares estimator of the VAR coefficients
+AL Least-squares estimator of the VAR coefficients
 
-Sigma: Least-squares estimator of the VAR residuals
+Sigma Least-squares estimator of the VAR residuals
 
-eta: VAR model residuals
+eta VAR model residuals
 
-X: Matrix of VAR covariates
+X Matrix of VAR covariates
 
-Y: VAR matrix of endogenous regressors
+Y VAR matrix of endogenous regressors
 
 If no exogenous regressors are specified, our estimation always includes a constant.
 }
