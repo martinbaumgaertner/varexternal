@@ -20,7 +20,7 @@ Gmatrices<-function(AL,C,p,hori,n){
                )
   AJ=array(rep(zeros(n*p, n), hori), c(n*p, n, hori))
   for (k in 1:hori){
-    AJ[,,k] = ((Alut)%^%(k-1)) %*% t(J)
+    AJ[,,k] = (expm::`%^%`(Alut,(k-1))) %*% t(J)
   }
   JAp = t(array(AJ, c(n*p,n*hori)))
   AJaux = array(rep(zeros(size(JAp,1)*n, size(JAp,2)*n), hori), c(size(JAp,1)*n, size(JAp,2)*n, hori))
