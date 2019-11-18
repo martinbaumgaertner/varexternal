@@ -18,7 +18,7 @@
 RForm_VAR<-function(TSL,p,W=NULL){
   for(i in 1:p){
     if(i==1){
-      aux<-lag.xts(TSL,k=i)
+      aux<-xts::lag.xts(TSL,k=i)
     }else{
       aux<-cbind(aux,lag.xts(TSL,k=i))
     }

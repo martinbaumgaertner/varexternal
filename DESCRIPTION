@@ -17,5 +17,6 @@ Imports: readxl,
          tidyr,
          pracma,
          expm,
-         stats
+         stats,
+         zoo
 RoxygenNote: 7.0.0
