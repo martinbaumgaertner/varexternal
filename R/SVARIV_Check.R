@@ -53,7 +53,7 @@ SVARIV_Check<-function(p,confidence, ydata, z, NWlags, norm, scale, horizons){
   if(ncol(z)!=1){
     stop('There must be only one instrument (z must have only one column)')
   }
-  if(nrow(z)!=T){
+  if(nrow(z)!=Ti){
     stop('z must have T rows')
   }
 }
