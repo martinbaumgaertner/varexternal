@@ -4,19 +4,7 @@
 \alias{SVARIV}
 \title{SvAR-IV.}
 \usage{
-SVARIV(
-  ydata,
-  z,
-  p,
-  confidence,
-  NWlags,
-  norm,
-  scale,
-  horizons,
-  columnnames,
-  time,
-  dataset_name
-)
+SVARIV(ydata, z, p, confidence, NWlags, norm, scale, horizons)
 }
 \arguments{
 \item{ydata}{Endogenous variables from the VAR model}

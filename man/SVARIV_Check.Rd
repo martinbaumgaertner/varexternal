@@ -4,22 +4,7 @@
 \alias{SVARIV_Check}
 \title{SVARIV_Check}
 \usage{
-SVARIV_Check(
-  p,
-  confidence,
-  ydata,
-  z,
-  NWlags,
-  norm,
-  scale,
-  horizons,
-  savdir,
-  columnnames,
-  IRFselect,
-  cumselect,
-  time,
-  dataset_name
-)
+SVARIV_Check(p, confidence, ydata, z, NWlags, norm, scale, horizons)
 }
 \arguments{
 \item{p}{Number of lags in the VAR model}
@@ -37,18 +22,6 @@ SVARIV_Check(
 \item{scale}{Scale of the shock}
 
 \item{horizons}{Number of horizons for the Impulse Response Functions}
-
-\item{savdir}{Directory where the figures generated will be saved}
-
-\item{columnnames}{Vector with the names for the endogenous variables, in the same order as ydata}
-
-\item{IRFselect}{Indices for the variables that the user wants separate IRF plots for}
-
-\item{cumselect}{Indices for the variables that the user wants cumulative IRF plots for}
-
-\item{time}{Time unit for the dataset e.g. year, month, etc.}
-
-\item{dataset_name}{The name of the dataset used for generating the figures}
 }
 \value{
 None

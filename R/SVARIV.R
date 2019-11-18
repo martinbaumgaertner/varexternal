@@ -18,9 +18,8 @@
 #'
 #' @export
 
-SVARIV<-function(ydata, z, p, confidence, NWlags, norm, scale, horizons, columnnames,
-                 time, dataset_name){
-  SVARIV_Check(p,confidence, ydata, z, NWlags, norm, scale, horizons, columnnames, IRFselect, cumselect, time, dataset_name)
+SVARIV<-function(ydata, z, p, confidence, NWlags, norm, scale, horizons){
+  SVARIV_Check(p,confidence, ydata, z, NWlags, norm, scale, horizons)
 
   SVARinp<-list(ydata=ydata,
                 Z=z,
