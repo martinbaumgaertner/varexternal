@@ -6,7 +6,6 @@
 #' @docType data
 #'
 #' @usage data(oil)
-#'
 #' @format Matrix with 6 rows (see examples)
 #'
 #' @keywords datasets
