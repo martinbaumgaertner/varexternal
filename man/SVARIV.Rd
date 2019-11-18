@@ -15,13 +15,13 @@ SVARIV(ydata, z, p, confidence, NWlags, norm, scale, horizons)
 
 \item{confidence}{Value for the standard and weak-IV robust confidence set}
 
-\item{NWlags}{Newey-West lags}
+\item{NWlags}{Newey-West lags (set it to 0 to compute heteroskedasticity robust std errors)}
 
 \item{norm}{Variable used for normalization}
 
 \item{scale}{Scale of the shock}
 
-\item{horizons}{Number of horizons for the Impulse Response Functions}
+\item{horizons}{Number of horizons for the Impulse Response Functions (does not include the impact or horizon 0)}
 }
 \value{
 PLugin:       Structure containing standard plug-in inference
@@ -34,4 +34,17 @@ RForm:        Structure containing the reduced form parameters
 }
 \description{
 Implements standard and weak-IV robust SVAR-IV inference.
+}
+\examples{
+p           = 24    #Number of lags in the VAR model
+confidence  = .95    #Confidence Level for the standard and weak-IV robust confidence set
+NWlags      = 0;  # Newey-West lags(if it is neccessary to account for time series autocorrelation)
+norm        = 1; # Variable used for normalization
+scale       = 1; # Scale of the shock
+horizons    = 20; #Number of horizons for the Impulse Response Functions(IRFs)
+data(oil)
+ydata<-data[,3:5]
+z<-data[,6]
+d<-SVARIV(ydata, z, p, confidence,  NWlags, norm, scale, horizons)
+
 }
