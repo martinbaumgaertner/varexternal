@@ -27,7 +27,7 @@ CovAhat_Sigmahat_Gamma<-function(p,X,Z,eta,lags){
   mataggaux = aperm(array(matagg, c(T2aux, 1, T1aux)), c(2, 1, 3))
 
   d <-array(data = NA,
-          dim = c(3, dim(mataggaux)[2], dim(mataggaux)[3]),
+          dim = c(dim(etaaux)[1], dim(mataggaux)[2], dim(mataggaux)[3]),
           dimnames = NULL)
   daux<-outer(etaaux, mataggaux, FUN = "*")
   for (i in 1:dim(mataggaux)[3]) {

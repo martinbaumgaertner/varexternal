@@ -13,9 +13,9 @@ Depends: R (>= 3.5.0)
 Imports: readxl,
          readr,
          R.matlab,
-         xts,
          tidyr,
          pracma,
          expm,
+         xts,
          stats
 RoxygenNote: 7.0.0
