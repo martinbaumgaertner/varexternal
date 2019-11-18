@@ -30,20 +30,20 @@ RForm_VAR<-function(TSL,p,W=NULL){
   Y<-TSL[(p+1):nrow(TSL),]
 
   if(!is.null(W)){
-    X    = cbind(W[(p+1):nrow(W),],aux[(p+1):nrow(aux),])
+    X = cbind(W[(p+1):nrow(W),],aux[(p+1):nrow(aux),])
 
-    m    = nrow(W)
+    m = nrow(W)
   }else{
-    X    = cbind(matrix(1,nrow(Y),1),aux[(p+1):nrow(aux),])
-    m    = 1
+    X = cbind(matrix(1,nrow(Y),1),aux[(p+1):nrow(aux),])
+    m = 1
   }
   slopeparameters = t(solve(t(X)%*%X)%*%t(X)%*%Y)
   t(solve(crossprod(X), crossprod(X,Y)))
 
-  AL   = slopeparameters[,(m+1):ncol(slopeparameters)]
-  mu   = slopeparameters[,1:m]
+  AL = slopeparameters[,(m+1):ncol(slopeparameters)]
+  mu = slopeparameters[,1:m]
 
-  eta  = t(Y)-slopeparameters%*%(t(X))
+  eta = t(Y)-slopeparameters%*%(t(X))
 
   Sigma= (eta%*%t(eta))/(ncol(eta))
 
