@@ -22,5 +22,4 @@
 #'
 #' @source \href{https://github.com/jm4474/SVARIV}
 #'
-
 "oil"
