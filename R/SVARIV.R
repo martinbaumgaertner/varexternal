@@ -38,9 +38,9 @@ SVARIV<-function(ydata, z, p, confidence, NWlags, norm, scale, horizons){
                 n=ncol(ydata))
 
   RForm<-RForm_VAR(SVARinp$ydata, p)
-  RForm$Gamma<-RForm$eta%*%SVARinp$Z[(p+1):nrow(SVARinp$Z),1]/ncol(RForm$eta)
+  RForm$Gamma<-RForm$eta%*%SVARinp$Z[(p+1):length(SVARinp$Z)]/ncol(RForm$eta)
   RForm$Y0         = SVARinp$ydata[1:p,]
-  RForm$externalIV = SVARinp$Z[(p+1):nrow(SVARinp$Z),1]
+  RForm$externalIV = SVARinp$Z[(p+1):length(SVARinp$Z)]
   RForm$n          = SVARinp$n
 
   n=RForm$n
@@ -48,7 +48,7 @@ SVARIV<-function(ydata, z, p, confidence, NWlags, norm, scale, horizons){
   d=((n^2)*p)+(n)
   dall= d+ (n*(n+1))/2
 
-  RForm<-c(RForm,CovAhat_Sigmahat_Gamma(p,RForm$X,SVARinp$Z[(p+1):nrow(SVARinp$Z),1],RForm$eta,NWlags))
+  RForm<-c(RForm,CovAhat_Sigmahat_Gamma(p,RForm$X,SVARinp$Z[(p+1):length(SVARinp$Z)],RForm$eta,NWlags))
 
   InferenceMSW = MSWfunction(confidence,norm,scale,horizons,RForm,1)$InferenceMSW
   Plugin = MSWfunction(confidence,norm,scale,horizons,RForm,0)$Plugin

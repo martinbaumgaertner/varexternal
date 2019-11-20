@@ -50,10 +50,10 @@ SVARIV_Check<-function(p,confidence, ydata, z, NWlags, norm, scale, horizons){
   if(is.null(z)){
     stop('z must be (T times 1) vector. It is now empty')
   }
-  if(ncol(z)!=1){
+  if(!is.null(ncol(z))){
     stop('There must be only one instrument (z must have only one column)')
   }
-  if(nrow(z)!=Ti){
+  if(length(z)!=Ti){
     stop('z must have T rows')
   }
 }
