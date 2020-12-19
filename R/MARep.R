@@ -14,10 +14,10 @@ MARep <- function(AL, p, hori) {
 
   vecAL     = array(AL, c(n, n, p))
 
-  vecALrevT = array(rep(zeros(n, n), hori), c(n, n, hori))
+  vecALrevT = array(rep(matrix(0,n,n), hori), c(n, n, hori))
   for (ihori in 1:hori) {
     if (ihori < (hori - p) + 1) {
-      vecALrevT[, , ihori] = zeros(n, n)
+      vecALrevT[, , ihori] = matrix(0,n,n)
     } else{
       vecALrevT[, , ihori] = t(vecAL[, , (hori - ihori) + 1])
     }
@@ -28,9 +28,11 @@ MARep <- function(AL, p, hori) {
   C             = repmat(vecAL[, , 1], 1, hori)
 
   for (ihori in 1:(hori - 1)) {
-    C[, ((n * ihori) + 1):(n * (ihori + 1))] = cbind(eye(n), C[, 1:(n * ihori)]) %*% t(vecALrevT[, ((hori *
+    C[, ((n * ihori) + 1):(n * (ihori + 1))] = cbind(diag(n), C[, 1:(n * ihori)]) %*% t(vecALrevT[, ((hori *
                                                                                                        n - (n * (ihori + 1))) + 1):ncol(vecALrevT)])
 
   }
   return(C)
 }
+
+

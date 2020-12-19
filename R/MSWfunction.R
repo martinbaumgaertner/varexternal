@@ -18,246 +18,237 @@
 #'
 #' @export
 #'
-MSWfunction <-function(confidence,nvar,scale,horizons,RForm,display_on) {
-    critval = qnorm(1 - ((1 - confidence) / 2), 0, 1) ^ 2
-    Caux        = cbind(eye(RForm$n), MARep(RForm$AL, RForm$p, horizons))
-    C = array(Caux, c(RForm$n, RForm$n, horizons + 1))
-    for (i in 2:dim(C)[3]) {
-      if (i == 2) {
-        Ccum <- cbind(C[, 1:dim(C)[2], 2])
-      } else{
-        Ccum <- cbind(Ccum, C[, 1:dim(C)[2], i])
-      }
-    }
-    Ccum <- array(Ccum, c(dim(C)[1], dim(C)[2], dim(C)[3]))
+#'
+MSWfunction <-function(confidence,nvar,scale,horizons,RForm) {
 
-    G <-Gmatrices(RForm$AL,
+  irfs<-list()
+for(a in 1:length(confidence)){
+  confi<-confidence[a]
+
+  critval = qnorm(1 - ((1 - confi) / 2), 0, 1) ^ 2
+  Caux        = cbind(diag(RForm$n), MARep(RForm$AL, RForm$p, horizons))
+  C = array(Caux, c(RForm$n, RForm$n, horizons + 1))
+  for (i in 2:dim(C)[3]) {
+    if (i == 2) {
+      Ccum <- cbind(C[, 1:dim(C)[2], 2])
+    } else{
+      Ccum <- cbind(Ccum, C[, 1:dim(C)[2], i])
+    }
+  }
+  Ccum <- array(Ccum, c(dim(C)[1], dim(C)[2], dim(C)[3]))
+
+  G <-Gmatrices(RForm$AL,
                 MARep(RForm$AL, RForm$p, horizons),
                 RForm$p,
                 horizons,
                 RForm$n)$G
-    Gcum <-Gmatrices(RForm$AL,
-                MARep(RForm$AL, RForm$p, horizons),
-                RForm$p,
-                horizons,
-                RForm$n)$Gcum
+  Gcum <-Gmatrices(RForm$AL,
+                   MARep(RForm$AL, RForm$p, horizons),
+                   RForm$p,
+                   horizons,
+                   RForm$n)$Gcum
 
-    B1chol      = t(chol(RForm$Sigma))
-    B1chol      = scale * (B1chol[, 1] / B1chol[nvar, 1])
+  B1chol      = t(chol(RForm$Sigma))
+  B1chol      = scale * (B1chol[, 1] / B1chol[nvar, 1])
 
-    Chol <- array(numeric(), c(0, 0, 2))
-    Chol[, , 1] = colSums(aperm(sweep(C, 2, t(B1chol), FUN = "*"), c(2, 1, 3)))
+  Chol <- array(numeric(), c(0, 0, 2))
+  Chol[, , 1] = colSums(aperm(sweep(C, 2, t(B1chol), FUN = "*"), c(2, 1, 3)))
 
-    Chol[, , 2] = colSums(aperm(sweep(Ccum, 2, t(B1chol), FUN = "*"), c(2, 1, 3)))
-    W1          = RForm$WHat[1:((RForm$n ^ 2) * RForm$p), 1:((RForm$n ^ 2) *RForm$p)]
-    W12         = RForm$WHat[1:((RForm$n ^ 2) * RForm$p), (1 + (RForm$n ^2) * RForm$p):(ncol(RForm$WHat))]
-    W2          = RForm$WHat[(1 + (RForm$n ^ 2) * RForm$p):nrow(RForm$WHat), (1 +(RForm$n ^ 2) * RForm$p):ncol(RForm$WHat)]
+  Chol[, , 2] = colSums(aperm(sweep(Ccum, 2, t(B1chol), FUN = "*"), c(2, 1, 3)))
+  W1          = RForm$WHat[1:((RForm$n ^ 2) * RForm$p), 1:((RForm$n ^ 2) *RForm$p)]
+  W12         = RForm$WHat[1:((RForm$n ^ 2) * RForm$p), (1 + (RForm$n ^2) * RForm$p):(ncol(RForm$WHat))]
+  W2          = RForm$WHat[(1 + (RForm$n ^ 2) * RForm$p):nrow(RForm$WHat), (1 +(RForm$n ^ 2) * RForm$p):ncol(RForm$WHat)]
 
-    n = RForm$n
+  n = RForm$n
 
-    Ti = dim(RForm$eta)[2]
+  Ti = dim(RForm$eta)[2]
 
-    e = eye(n)
-    ahat      = zeros(n, horizons + 1)
-    bhat      = zeros(n, horizons + 1)
-    chat      = zeros(n, horizons + 1)
-    Deltahat  = zeros(n, horizons + 1)
-    MSWlbound = zeros(n, horizons + 1)
-    MSWubound = zeros(n, horizons + 1)
-    casedummy = zeros(n, horizons + 1)
-    j=1;ih=2
-    for (j in 1:n) {
-      for (ih in 1:(horizons + 1)) {
-        ahat[j, ih] = (Ti %*% (RForm$Gamma[nvar, 1] ^ 2)) - (critval %*% W2[nvar, nvar])
-        bhat[j, ih] = -2 * Ti * scale * (t(e[, j]) %*% C[, , ih] %*% RForm$Gamma) %*%RForm$Gamma[nvar, 1] +
-          2 * critval * scale * kronecker(t(RForm$Gamma), t(e[, j])) %*% G[, , ih] %*%W12[, nvar] +
-          2 * critval * scale * t(e[, j]) %*% C[, , ih] %*% W2[, nvar]
-        chat[j, ih] = ((Ti ^ .5) * scale * t(e[, j]) %*% C[, , ih] %*% RForm$Gamma) ^2 -
-          critval * (scale ^ 2) * (kronecker(t(RForm$Gamma), t(e[, j]))) %*%G[, , ih] %*% W1 %*% t((kronecker(t(RForm$Gamma), t(e[, j]))) %*% G[, , ih]) -
-          2 * critval * (scale ^ 2) * (kronecker(t(RForm$Gamma), t(e[, j]))) %*%G[, , ih] %*% W12 %*% t(C[, , ih]) %*% e[, j] -
-          critval * (scale ^ 2) * t(e[, j]) %*% C[, , ih] %*% W2 %*% t(C[, , ih]) %*%e[, j]
+  e = diag(n)
 
-        Deltahat[j, ih] = bhat[j, ih] ^ 2 - (4 * ahat[j, ih] * chat[j, ih])
+  ahat      = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  bhat      = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  chat      = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  Deltahat  = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  MSWlbound = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  MSWubound = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  casedummy = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
 
-        if (ahat[j, ih] > 0 && Deltahat[j, ih] > 0) {
-          casedummy[j, ih] = 1
-          MSWlbound[j, ih] = (-bhat[j, ih] - (Deltahat[j, ih] ^ 0.5)) / (2 *ahat[j, ih])
-          MSWubound[j, ih] = (-bhat[j, ih] + (Deltahat[j, ih] ^ 0.5)) / (2 *ahat[j, ih])
-        } else if (ahat[j, ih] < 0 && Deltahat[j, ih] > 0) {
-          casedummy[j, ih] = 2
-          MSWlbound[j, ih] = (-bhat[j, ih] + (Deltahat[j, ih] ^ 0.5)) / (2 *ahat[j, ih])
-          MSWubound[j, ih] = (-bhat[j, ih] - (Deltahat[j, ih] ^ 0.5)) / (2 *ahat[j, ih])
-        } else if (ahat[j, ih] > 0 && Deltahat[j, ih] < 0) {
-          casedummy[j, ih] = 3
-          MSWlbound[j, ih] = NA
-          MSWubound[j, ih] = NA
-        } else{
-          casedummy[j, ih] = 4
-          MSWlbound[j, ih] = -Inf
-          MSWubound[j, ih] = Inf
-        }
+  lambdahat                  = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  DmethodVar                 = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  Dmethodlbound              = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  Dmethodubound              = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
 
-      }
-    }
+  ahatcum      = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  bhatcum      = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  chatcum      = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  Deltahatcum  = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  MSWlboundcum = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  MSWuboundcum = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  casedummycum = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
 
-    MSWlbound[nvar, 1] = scale
-    MSWubound[nvar, 1] = scale
+  lambdahatcum                  = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  DmethodVarcum                 = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  Dmethodlboundcum              = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
+  Dmethoduboundcum              = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
 
-    InferenceMSW <- list(
-      ahat = ahat,
-      bhat = bhat,
-      chat = chat,
-      Deltahat = Deltahat,
-      casedummy = casedummy,
-      MSWlbound = MSWlbound,
-      MSWubound = MSWubound,
-      Ti = Ti
-    )
-
-    lambdahat                  = zeros(n, horizons + 1)
-    DmethodVar                 = zeros(n, horizons + 1)
-    Dmethodlbound              = zeros(n, horizons + 1)
-    Dmethodubound              = zeros(n, horizons + 1)
-
+  j=1;ih=2
+  for (j in 1:n) {
     for (ih in 1:(horizons + 1)) {
-      for (ivar in 1:n) {
-        lambdahat[ivar, ih]     = scale * t(e[, ivar]) %*% C[, , ih] %*% RForm$Gamma /RForm$Gamma[nvar, 1]
-        d1                     = ((kronecker(t(RForm$Gamma), t(e[, ivar])) *scale) %*% G[, , ih])
-        d2                     = (scale * t(e[, ivar]) %*% C[, , ih]) -(lambdahat[ivar, ih] %*% t(e[, nvar]))
-        d                      = t(cbind(d1, d2))
+      ahat[j, ih] = (Ti %*% (RForm$Gamma[nvar, 1] ^ 2)) - (critval %*% W2[nvar, nvar])
+      bhat[j, ih] = -2 * Ti * scale * (t(e[, j]) %*% C[, , ih] %*% RForm$Gamma) %*%RForm$Gamma[nvar, 1] +
+        2 * critval * scale * kronecker(t(RForm$Gamma), t(e[, j])) %*% G[, , ih] %*%W12[, nvar] +
+        2 * critval * scale * t(e[, j]) %*% C[, , ih] %*% W2[, nvar]
+      chat[j, ih] = ((Ti ^ .5) * scale * t(e[, j]) %*% C[, , ih] %*% RForm$Gamma) ^2 -
+        critval * (scale ^ 2) * (kronecker(t(RForm$Gamma), t(e[, j]))) %*%G[, , ih] %*% W1 %*% t((kronecker(t(RForm$Gamma), t(e[, j]))) %*% G[, , ih]) -
+        2 * critval * (scale ^ 2) * (kronecker(t(RForm$Gamma), t(e[, j]))) %*%G[, , ih] %*% W12 %*% t(C[, , ih]) %*% e[, j] -
+        critval * (scale ^ 2) * t(e[, j]) %*% C[, , ih] %*% W2 %*% t(C[, , ih]) %*%e[, j]
 
-        DmethodVar[ivar, ih]    = t(d) %*% RForm$WHat %*% d
-        Dmethodlbound[ivar, ih] = lambdahat[ivar, ih] - ((critval / Ti) ^0.5) * (DmethodVar[ivar, ih] ^ 0.5) / abs(RForm$Gamma[nvar, 1])
-        Dmethodubound[ivar, ih] = lambdahat[ivar, ih] + ((critval / Ti) ^0.5) * (DmethodVar[ivar, ih] ^ 0.5) / abs(RForm$Gamma[nvar, 1])
+      Deltahat[j, ih] = bhat[j, ih] ^ 2 - (4 * ahat[j, ih] * chat[j, ih])
 
-        rm(d1)
-        rm(d2)
-        rm(d)
-
+      if (ahat[j, ih] > 0 && Deltahat[j, ih] > 0) {
+        casedummy[j, ih] = 1
+        MSWlbound[j, ih] = (-bhat[j, ih] - (Deltahat[j, ih] ^ 0.5)) / (2 *ahat[j, ih])
+        MSWubound[j, ih] = (-bhat[j, ih] + (Deltahat[j, ih] ^ 0.5)) / (2 *ahat[j, ih])
+      } else if (ahat[j, ih] < 0 && Deltahat[j, ih] > 0) {
+        casedummy[j, ih] = 2
+        MSWlbound[j, ih] = (-bhat[j, ih] + (Deltahat[j, ih] ^ 0.5)) / (2 *ahat[j, ih])
+        MSWubound[j, ih] = (-bhat[j, ih] - (Deltahat[j, ih] ^ 0.5)) / (2 *ahat[j, ih])
+      } else if (ahat[j, ih] > 0 && Deltahat[j, ih] < 0) {
+        casedummy[j, ih] = 3
+        MSWlbound[j, ih] = NA
+        MSWubound[j, ih] = NA
+      } else{
+        casedummy[j, ih] = 4
+        MSWlbound[j, ih] = -Inf
+        MSWubound[j, ih] = Inf
       }
+
     }
+  }
 
-    InferenceMSW <- c(InferenceMSW,
-                      list(Dmethodlbound = Dmethodlbound,
-                           Dmethodubound = Dmethodubound))
+  MSWlbound[nvar, 1] = scale
+  MSWubound[nvar, 1] = scale
 
-    Plugin <- list(IRF = lambdahat,
-                   IRFstderror = (DmethodVar ^ 0.5) / ((Ti ^ 0.5) * abs(RForm$Gamma[nvar, 1])))
+  InferenceMSW <- list(
+    ahat = ahat,
+    bhat = bhat,
+    chat = chat,
+    Deltahat = Deltahat,
+    casedummy = casedummy,
+    MSWlbound = MSWlbound,
+    MSWubound = MSWubound,
+    Ti = Ti
+  )
 
-    ahatcum      = zeros(n, horizons + 1)
-    bhatcum      = zeros(n, horizons + 1)
-    chatcum      = zeros(n, horizons + 1)
-    Deltahatcum  = zeros(n, horizons + 1)
-    MSWlboundcum = zeros(n, horizons + 1)
-    MSWuboundcum = zeros(n, horizons + 1)
-    casedummycum = zeros(n, horizons + 1)
+  for (ih in 1:(horizons + 1)) {
+    for (ivar in 1:n) {
+      lambdahat[ivar, ih]     = scale * t(e[, ivar]) %*% C[, , ih] %*% RForm$Gamma /RForm$Gamma[nvar, 1]
+      d1                     = ((kronecker(t(RForm$Gamma), t(e[, ivar])) *scale) %*% G[, , ih])
+      d2                     = (scale * t(e[, ivar]) %*% C[, , ih]) -(lambdahat[ivar, ih] %*% t(e[, nvar]))
+      d                      = t(cbind(d1, d2))
 
-    for (j in 1:n) {
-      for (ih in 1:(horizons + 1)) {
-        ahatcum[j, ih] = (Ti %*% (RForm$Gamma[nvar, 1] ^ 2)) - (critval %*% W2[nvar, nvar])
-        bhatcum[j, ih] = -2 * Ti * scale * (t(e[, j]) %*% Ccum[, , ih] %*% RForm$Gamma) %*%RForm$Gamma[nvar, 1] +
-          2 * critval * scale * kronecker(t(RForm$Gamma), t(e[, j])) %*% Gcum[, , ih] %*%W12[, nvar] +
-          2 * critval * scale * t(e[, j]) %*% Ccum[, , ih] %*% W2[, nvar]
-        chatcum[j, ih] = ((Ti ^ 0.5) * scale * t(e[, j]) %*% Ccum[, , ih] %*%RForm$Gamma) ^ 2 -
-          critval * (scale ^ 2) * (kronecker(t(RForm$Gamma), t(e[, j]))) %*%Gcum[, , ih] %*% W1 %*% t((kronecker(t(RForm$Gamma), t(e[, j]))) %*% Gcum[, , ih]) -
-          2 * critval * (scale ^ 2) * (kronecker(t(RForm$Gamma), t(e[, j]))) %*%Gcum[, , ih] %*% W12 %*% t(Ccum[, , ih]) %*% e[, j] -
-          critval * (scale ^ 2) * t(e[, j]) %*% Ccum[, , ih] %*% W2 %*% t(Ccum[, , ih]) %*%e[, j]
+      DmethodVar[ivar, ih]    = t(d) %*% RForm$WHat %*% d
+      Dmethodlbound[ivar, ih] = lambdahat[ivar, ih] - ((critval / Ti) ^0.5) * (DmethodVar[ivar, ih] ^ 0.5) / abs(RForm$Gamma[nvar, 1])
+      Dmethodubound[ivar, ih] = lambdahat[ivar, ih] + ((critval / Ti) ^0.5) * (DmethodVar[ivar, ih] ^ 0.5) / abs(RForm$Gamma[nvar, 1])
 
-        Deltahatcum[j, ih] = bhatcum[j, ih] ^ 2 - (4 * ahatcum[j, ih] * chatcum[j, ih])
+      rm(d1)
+      rm(d2)
+      rm(d)
 
-        if (ahatcum[j, ih] > 0 & Deltahatcum[j, ih] > 0) {
-          casedummycum[j, ih] = 1
-          MSWlboundcum[j, ih] = (-bhatcum[j, ih] - (Deltahatcum[j, ih] ^ 0.5)) /(2 * ahatcum[j, ih])
-          MSWuboundcum[j, ih] = (-bhatcum[j, ih] + (Deltahatcum[j, ih] ^ 0.5)) /(2 * ahatcum[j, ih])
-        } else if (ahatcum[j, ih] < 0 & Deltahatcum[j, ih] > 0) {
-          casedummycum[j, ih] = 2
-          MSWlboundcum[j, ih] = (-bhatcum[j, ih] + (Deltahatcum[j, ih] ^ 0.5)) /(2 * ahatcum[j, ih])
-          MSWuboundcum[j, ih] = (-bhatcum[j, ih] - (Deltahatcum[j, ih] ^ 0.5)) /(2 * ahatcum[j, ih])
-        } else if (ahatcum[j, ih] > 0 & Deltahatcum[j, ih] < 0) {
-          casedummycum[j, ih] = 3
-          MSWlboundcum[j, ih] = NA
-          MSWuboundcum[j, ih] = NA
-        } else{
-          casedummycum[j, ih] = 4
-          MSWlboundcum[j, ih] = -Inf
-          MSWuboundcum[j, ih] = Inf
-        }
-
-      }
     }
+  }
 
-    MSWlboundcum[nvar, 1] = scale
-    MSWuboundcum[nvar, 1] = scale
+  IRF = lambdahat
+  IRFstderror = (DmethodVar ^ 0.5) / ((Ti ^ 0.5) * abs(RForm$Gamma[nvar, 1]))
 
-    InferenceMSW <- c(InferenceMSW,list(ahatcum = ahatcum,
-                                        bhatcum = bhatcum,
-                                        chatcum = chatcum,
-                                        Deltahatcum = Deltahatcum,
-                                        casedummycum = casedummycum,
-                                        MSWlboundcum = MSWlboundcum,
-                                        MSWuboundcum = MSWuboundcum
-                                      )
-    )
 
-    lambdahatcum                  = zeros(n, horizons + 1)
-    DmethodVarcum                 = zeros(n, horizons + 1)
-    Dmethodlboundcum              = zeros(n, horizons + 1)
-    Dmethoduboundcum              = zeros(n, horizons + 1)
-
+  for (j in 1:n) {
     for (ih in 1:(horizons + 1)) {
-      for (ivar in 1:n) {
-        lambdahatcum[ivar, ih]     = scale * t(e[, ivar]) %*% Ccum[, , ih] %*% RForm$Gamma /RForm$Gamma[nvar, 1]
-        d1                     = ((kronecker(t(RForm$Gamma), t(e[, ivar])) *scale) %*% Gcum[, , ih])
-        d2                     = (scale * t(e[, ivar]) %*% Ccum[, , ih]) -(lambdahatcum[ivar, ih] %*% t(e[, nvar]))
-        d                      = t(cbind(d1, d2))
+      ahatcum[j, ih] = (Ti %*% (RForm$Gamma[nvar, 1] ^ 2)) - (critval %*% W2[nvar, nvar])
+      bhatcum[j, ih] = -2 * Ti * scale * (t(e[, j]) %*% Ccum[, , ih] %*% RForm$Gamma) %*%RForm$Gamma[nvar, 1] +
+        2 * critval * scale * kronecker(t(RForm$Gamma), t(e[, j])) %*% Gcum[, , ih] %*%W12[, nvar] +
+        2 * critval * scale * t(e[, j]) %*% Ccum[, , ih] %*% W2[, nvar]
+      chatcum[j, ih] = ((Ti ^ 0.5) * scale * t(e[, j]) %*% Ccum[, , ih] %*%RForm$Gamma) ^ 2 -
+        critval * (scale ^ 2) * (kronecker(t(RForm$Gamma), t(e[, j]))) %*%Gcum[, , ih] %*% W1 %*% t((kronecker(t(RForm$Gamma), t(e[, j]))) %*% Gcum[, , ih]) -
+        2 * critval * (scale ^ 2) * (kronecker(t(RForm$Gamma), t(e[, j]))) %*%Gcum[, , ih] %*% W12 %*% t(Ccum[, , ih]) %*% e[, j] -
+        critval * (scale ^ 2) * t(e[, j]) %*% Ccum[, , ih] %*% W2 %*% t(Ccum[, , ih]) %*%e[, j]
 
-        DmethodVarcum[ivar, ih]    = t(d) %*% RForm$WHat %*% d
-        Dmethodlboundcum[ivar, ih] = lambdahatcum[ivar, ih] - ((critval / Ti) ^0.5) * (DmethodVarcum[ivar, ih] ^ 0.5) / abs(RForm$Gamma[nvar, 1])
-        Dmethoduboundcum[ivar, ih] = lambdahatcum[ivar, ih] + ((critval / Ti) ^0.5) * (DmethodVarcum[ivar, ih] ^ 0.5) / abs(RForm$Gamma[nvar, 1])
+      Deltahatcum[j, ih] = bhatcum[j, ih] ^ 2 - (4 * ahatcum[j, ih] * chatcum[j, ih])
 
-        rm(d1)
-        rm(d2)
-        rm(d)
+      if (ahatcum[j, ih] > 0 & Deltahatcum[j, ih] > 0) {
+        casedummycum[j, ih] = 1
+        MSWlboundcum[j, ih] = (-bhatcum[j, ih] - (Deltahatcum[j, ih] ^ 0.5)) /(2 * ahatcum[j, ih])
+        MSWuboundcum[j, ih] = (-bhatcum[j, ih] + (Deltahatcum[j, ih] ^ 0.5)) /(2 * ahatcum[j, ih])
+      } else if (ahatcum[j, ih] < 0 & Deltahatcum[j, ih] > 0) {
+        casedummycum[j, ih] = 2
+        MSWlboundcum[j, ih] = (-bhatcum[j, ih] + (Deltahatcum[j, ih] ^ 0.5)) /(2 * ahatcum[j, ih])
+        MSWuboundcum[j, ih] = (-bhatcum[j, ih] - (Deltahatcum[j, ih] ^ 0.5)) /(2 * ahatcum[j, ih])
+      } else if (ahatcum[j, ih] > 0 & Deltahatcum[j, ih] < 0) {
+        casedummycum[j, ih] = 3
+        MSWlboundcum[j, ih] = NA
+        MSWuboundcum[j, ih] = NA
+      } else{
+        casedummycum[j, ih] = 4
+        MSWlboundcum[j, ih] = -Inf
+        MSWuboundcum[j, ih] = Inf
       }
+
     }
+  }
 
-    InferenceMSW <-c(InferenceMSW,list(Dmethodlboundcum = Dmethodlboundcum,
-                                       Dmethoduboundcum = Dmethoduboundcum))
+  MSWlboundcum[nvar, 1] = scale
+  MSWuboundcum[nvar, 1] = scale
 
-    Plugin <- c(Plugin,list(IRFcum = lambdahatcum,
-                   IRFstderrorcum = (DmethodVarcum ^ 0.5) / ((Ti ^ 0.5) * abs(RForm$Gamma[nvar, 1]))))
+  for (ih in 1:(horizons + 1)) {
+    for (ivar in 1:n) {
+      lambdahatcum[ivar, ih]     = scale * t(e[, ivar]) %*% Ccum[, , ih] %*% RForm$Gamma /RForm$Gamma[nvar, 1]
+      d1                     = ((kronecker(t(RForm$Gamma), t(e[, ivar])) *scale) %*% Gcum[, , ih])
+      d2                     = (scale * t(e[, ivar]) %*% Ccum[, , ih]) -(lambdahatcum[ivar, ih] %*% t(e[, nvar]))
+      d                      = t(cbind(d1, d2))
 
-    Waldstat              = (((Ti ^ 0.5) * RForm$Gamma[nvar, 1]) ^ 2) / RForm$WHat[((n ^
-                                                                                       2) * RForm$p) + nvar, ((n ^ 2) * RForm$p) + nvar]
+      DmethodVarcum[ivar, ih]    = t(d) %*% RForm$WHat %*% d
+      Dmethodlboundcum[ivar, ih] = lambdahatcum[ivar, ih] - ((critval / Ti) ^0.5) * (DmethodVarcum[ivar, ih] ^ 0.5) / abs(RForm$Gamma[nvar, 1])
+      Dmethoduboundcum[ivar, ih] = lambdahatcum[ivar, ih] + ((critval / Ti) ^0.5) * (DmethodVarcum[ivar, ih] ^ 0.5) / abs(RForm$Gamma[nvar, 1])
 
-    InferenceMSW <- c(InferenceMSW,
-                       list(Waldstat = Waldstat))
-    if (display_on == 1) {
-      print(
-        'NOTE: The Wald statistic for the covariance between the instrument and the normalized variable is:'
-      )
-      print(Waldstat)
-      print('Given the confidence level, if the Wald statistic is larger than: \n\n')
-      print(critval)
-      print(
-        'The weak-IV robust confidence set will be a bounded interval for every horizon (check "casedummy" if not).'
-      )
-      disp('--')
-
-      #display('Also, the Wald statistic for the covariance between the instrument and the full vector of reduced-form residuals is')
-      #WaldstatFull= (Ti)*(RForm.Gamma'*(RForm.WHat(((n^2)*RForm.p)+nvar:end,((n^2)*RForm.p)+nvar:end))^(-1)*RForm.Gamma);
-      #display(WaldstatFull);
-      #display('The 1-alpha quantile of this statistic is:')
-      #display(chi2inv(confidence,n))
+      rm(d1)
+      rm(d2)
+      rm(d)
     }
+  }
 
-    #Plugin<-c(Plugin,
-    #          epsilonhat=scale*t(RForm$Gamma)%*%(solve(RForm$Sigma))%*%RForm$eta/RForm$Gamma[nvar,1],
-    #          epsilonhatstd = (Plugin$epsilonhat-mean(Plugin$epsilonhat))/std(Plugin$epsilonhat))
 
-    return(list(
-      InferenceMSW = InferenceMSW,
-      Plugin = Plugin,
-      Chol = Chol
-    ))
+
+  IRFstderrorcum = (DmethodVarcum ^ 0.5) / ((Ti ^ 0.5) * abs(RForm$Gamma[nvar, 1]))
+
+  Waldstat              = (((Ti ^ 0.5) * RForm$Gamma[[nvar, 1]]) ^ 2) / RForm$WHat[((n ^2) * RForm$p) +
+                                                                                     nvar, ((n ^ 2) * RForm$p) + nvar]
+  irfs[[a]]<-list(
+    plugin=list(point=lambdahat,
+                lower=lambdahat-IRFstderror,
+                upper=lambdahat+IRFstderror),
+    delta=list(point=lambdahat,
+               lower=Dmethodlbound,
+               upper=Dmethodubound),
+    msw=list(point=lambdahat,
+             lower=MSWlbound,
+             upper=MSWubound,
+             Waldstat=Waldstat,
+             critval=critval),
+    plugin_cum=list(point=lambdahatcum,
+                    lower=lambdahatcum-IRFstderrorcum,
+                    upper=lambdahatcum+IRFstderrorcum),
+    delta_cum=list(point=lambdahatcum,
+                   lower=Dmethodlboundcum,
+                   upper=Dmethodubound),
+    msw_cum=list(point=lambdahatcum,
+                lower=MSWlboundcum,
+                upper=Dmethoduboundcum,
+                Waldstat=Waldstat,
+                critval=critval)
+  )
+}
+
+  names(irfs)<-confidence
+
+  return(irfs)
   }

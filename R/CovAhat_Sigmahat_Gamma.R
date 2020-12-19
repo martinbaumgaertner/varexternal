@@ -51,7 +51,7 @@ CovAhat_Sigmahat_Gamma<-function(p,X,Z,eta,lags){
 
   WhatAss1 = AuxHAC3
 
-  I = eye(n)
+  I = diag(n)
   V = t(kronecker(I[1, ], I))
 
   for (i_vars in 2:n) {
@@ -67,16 +67,16 @@ CovAhat_Sigmahat_Gamma<-function(p,X,Z,eta,lags){
 
 
   Shat = rbind(cbind(kronecker(cbind(
-    zeros(n * p, m), eye(n * p)
+    matrix(0,n * p,m), diag(n * p)
   ) %*% (solve(
     Q1
-  )), eye(n)), zeros((n ^ 2) * p, n ^ 2 + (k * n))),
-  cbind(zeros(n * (n + 1) / 2, ((
+  )), diag(n)), matrix(0,(n ^ 2) * p, n ^ 2 + (k * n))),
+  cbind(matrix(0,n * (n + 1) / 2, ((
     n ^ 2
-  ) * p) + (n * m)), V, zeros(n * (n + 1) / 2, k * n)),
-  cbind(-kron(Q2 %*% (solve(
+  ) * p) + (n * m)), V, matrix(0,n * (n + 1) / 2, k * n)),
+  cbind(-kronecker(Q2 %*% (solve(
     Q1
-  )), eye(n)), zeros(k * n, n ^ 2), eye(k * n)))
+  )), diag(n)), matrix(0,k * n, n ^ 2), diag(k * n)))
 
   WHataux  = (Shat) %*% (WhatAss1) %*% (t(Shat))
 

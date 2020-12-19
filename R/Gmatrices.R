@@ -14,7 +14,7 @@
 #'
 #' @export
 Gmatrices<-function(AL,C,p,hori,n){
-  J = cbind(eye(n), zeros(n,(p-1)*n))
+  J = cbind(diag(n), zeros(n,(p-1)*n))
   Alut = rbind(AL,
                cbind(eye(n*(p-1)),zeros(n*(p-1),n))
                )
@@ -25,10 +25,10 @@ Gmatrices<-function(AL,C,p,hori,n){
   JAp = t(array(AJ, c(n*p,n*hori)))
   AJaux = array(rep(zeros(size(JAp,1)*n, size(JAp,2)*n), hori), c(size(JAp,1)*n, size(JAp,2)*n, hori))
 
-  Caux = array(cbind(eye(n), C[,(1:((hori-1)*n))]), c(n,n,hori))
+  Caux = array(cbind(diag(n), C[,(1:((hori-1)*n))]), c(n,n,hori))
 
   for (i in 1:(hori)){
-    AJaux[(((n^2)*(i-1))+1):dim(AJaux)[1],,i] = kron(JAp[1:(n*(hori+1-i)),], Caux[,,i])
+    AJaux[(((n^2)*(i-1))+1):dim(AJaux)[1],,i] = kronecker(JAp[1:(n*(hori+1-i)),], Caux[,,i])
   }
 
   Gaux = aperm(array(t(apply(AJaux,1:2,sum)), c((n^2)*p, n^2, hori)), c(2,1,3))

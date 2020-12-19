@@ -26,17 +26,16 @@ SVARIV_Check<-function(p,confidence, ydata, z, NWlags, norm, scale, horizons){
   if(length(p)!=1){
     stop('p must have only one element')
   }
-  if(is.null(confidence)){
+  for(i in length(confidence)){
+  if(is.null(confidence[i])){
     stop('confidence must be assigned a value.')
   }
-  if(!is.numeric(confidence)){
+  if(!is.numeric(confidence[i])){
     stop('confidence must be numeric.')
   }
-  if(length(confidence)!=1){
-    stop('confidence must have only one element')
-  }
-  if(confidence>=1|confidence<=0){
+  if(confidence[i]>=1|confidence[i]<=0){
     stop('confidence must be > 0 and < 1')
+  }
   }
   if(is.null(ydata)){
     stop('ydata must be a (T times n) matrix. It is now empty')
