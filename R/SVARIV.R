@@ -83,9 +83,9 @@ SVARIV<-function(ydata, z, p, confidence, NWlags, norm, scale, horizons,ci_type=
       Stat<-NULL
     }
 
-  irfs=as_tibble(melt.list(InferenceMSW) %>%
-    dplyr::rename("variable"=X1,
-                  "horizon"=X2,
+  irfs=as_tibble(melt(InferenceMSW) %>%
+    dplyr::rename("variable"=Var1,
+                  "horizon"=Var2,
                   "type"=L3,
                   "confi_type"=L2,
                   "confi_level"=L1) %>%
