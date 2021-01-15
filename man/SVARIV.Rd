@@ -4,7 +4,19 @@
 \alias{SVARIV}
 \title{SvAR-IV.}
 \usage{
-SVARIV(ydata, z, p, confidence, NWlags, norm, scale, horizons)
+SVARIV(
+  ydata,
+  z,
+  p,
+  confidence,
+  NWlags,
+  norm,
+  scale,
+  horizons,
+  ci_type = c("msw"),
+  print_wald = T,
+  instrument_name
+)
 }
 \arguments{
 \item{ydata}{Endogenous variables from the VAR model}
@@ -22,29 +34,35 @@ SVARIV(ydata, z, p, confidence, NWlags, norm, scale, horizons)
 \item{scale}{Scale of the shock}
 
 \item{horizons}{Number of horizons for the Impulse Response Functions (does not include the impact or horizon 0)}
+
+\item{ci_type}{confidence intervals to include (choose from "msw" (Montiel, Stock and Watson, 2020), "delta" or "plugin")}
+
+\item{print_wald}{Number of horizons for the Impulse Response Functions (does not include the impact or horizon 0)}
+
+\item{instrument_name}{Number of horizons for the Impulse Response Functions (does not include the impact or horizon 0)}
 }
 \value{
-PLugin:       Structure containing standard plug-in inference
+irfs:       list containing all irf data
 
-InferenceMSW: Structure containing the MSW weak-iv robust confidence interval
-
-Chol:         Cholesky IRFs
-
-RForm:        Structure containing the reduced form parameters
+waldstat: contain msw waldstat
 }
 \description{
 Implements standard and weak-IV robust SVAR-IV inference.
 }
 \examples{
+
+
+
 p           = 24    #Number of lags in the VAR model
-confidence  = .95    #Confidence Level for the standard and weak-IV robust confidence set
 NWlags      = 0;  # Newey-West lags(if it is neccessary to account for time series autocorrelation)
 norm        = 1; # Variable used for normalization
 scale       = 1; # Scale of the shock
 horizons    = 20; #Number of horizons for the Impulse Response Functions(IRFs)
+confidence=c(0.6,0.9,0.95);
 data(oil)
-ydata<-data[,3:5]
-z<-data[,6]
-d<-SVARIV(ydata, z, p, confidence,  NWlags, norm, scale, horizons)
+colnames(oil)<-c("a","b","c","d","year","month")
+ydata<-oil[,1:3]
+z<-oil[,4]
+VAR<-SVARIV(ydata,z,p,confidence,NWlags,norm,scale,horizons,instrument_name="test")
 
 }

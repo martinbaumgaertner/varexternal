@@ -4,7 +4,7 @@
 \alias{MSWfunction}
 \title{MARep}
 \usage{
-MSWfunction(confidence, nvar, scale, horizons, RForm, display_on)
+MSWfunction(confidence, nvar, scale, horizons, RForm)
 }
 \arguments{
 \item{confidence}{confidence level}

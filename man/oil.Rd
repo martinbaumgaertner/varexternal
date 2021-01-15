@@ -4,7 +4,9 @@
 \name{oil}
 \alias{oil}
 \title{Macro data on oil shocks}
-\format{Matrix with 6 rows (see examples)}
+\format{
+Matrix with 6 rows (see examples)
+}
 \source{
 \href{https://github.com/jm4474/SVARIV}
 }
