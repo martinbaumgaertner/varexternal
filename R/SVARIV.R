@@ -59,7 +59,7 @@ SVARIV<-function(ydata, z, p, confidence, NWlags, norm, scale, horizons,ci_type=
   InferenceMSW = MSWfunction(confidence,norm,scale,horizons,RForm)
 
   if(any(ci_type=="msw")){
-    waldstat<-melt.list(InferenceMSW) %>%
+    waldstat<-melt(InferenceMSW) %>%
       filter(L3 %in% c("critval","Waldstat")) %>%
       select(-X1,-X2,-L2) %>%
       dplyr::rename("type"=L3,"level"=L1) %>%
