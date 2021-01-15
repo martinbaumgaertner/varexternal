@@ -1,4 +1,4 @@
-#' CovAhat_Sigmahat_Gamma
+#' pretty_irf
 #'
 #' Estimates the asymptotic covariance matrix
 #'
@@ -32,10 +32,9 @@
 #'VAR<-SVARIV(ydata,z,p,confidence,NWlags,norm,scale,horizons,instrument_name="test")
 #'sh.col<-      c("#E41A1C")
 #'names(sh.col)<-c("test")
-#'pretty.irf(data=list(VAR$irfs),shock_names="test",pretty_names=c("a","b","c"),manual_color=sh.col,title="subheading")
+#'pretty_irf(data=list(VAR$irfs),shock_names="test",pretty_names=c("a","b","c"),manual_color=sh.col,title="subheading")
 #' @export
-
-pretty.irf<-function(data,shock_names,pretty_names=NULL,cum=F,confidence_type="msw",
+pretty_irf<-function(data,shock_names,pretty_names=NULL,cum=F,confidence_type="msw",
                      manual_color=NULL,legend=F,title=NULL,same_scale=T,
                      shock_sign="positive"
                      ){
