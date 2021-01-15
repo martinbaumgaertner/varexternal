@@ -21,5 +21,6 @@ Depends: R (>= 3.5.0),
          expm,
          tidyverse,
          xts,
-         patchwork
+         patchwork,
+         reshape2
 RoxygenNote: 7.1.1

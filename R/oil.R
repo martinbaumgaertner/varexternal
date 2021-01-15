@@ -19,3 +19,4 @@
 #'
 #' @source https://github.com/jm4474/SVARIV
 #'
+"oil"
