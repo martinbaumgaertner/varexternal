@@ -59,13 +59,13 @@ SVARIV<-function(ydata, z, p, confidence, NWlags, norm, scale, horizons,ci_type=
   InferenceMSW = MSWfunction(confidence,norm,scale,horizons,RForm)
 
   if(any(ci_type=="msw")){
-    waldstat<-melt.list(InferenceMSW) %>%
+    waldstat<-melt(InferenceMSW) %>%
       filter(L3 %in% c("critval","Waldstat")) %>%
-      select(-X1,-X2,-L2) %>%
       dplyr::rename("type"=L3,"level"=L1) %>%
       unique() %>%
       filter(row_number()!=1) %>%
-      arrange(value)
+      arrange(value) %>%
+      select(-Var1,-Var2)
 
     position=max(which(waldstat$type=="Waldstat"))
 
@@ -83,13 +83,13 @@ SVARIV<-function(ydata, z, p, confidence, NWlags, norm, scale, horizons,ci_type=
       Stat<-NULL
     }
 
-  irfs=as_tibble(melt.list(InferenceMSW) %>%
-    dplyr::rename("variable"=X1,
-                  "horizon"=X2,
+  irfs=as_tibble(melt(InferenceMSW)) %>%
+    dplyr::rename("variable"=Var1,
+                  "horizon"=Var2,
                   "type"=L3,
                   "confi_type"=L2,
                   "confi_level"=L1) %>%
-    filter(complete.cases(.))) %>%
+    filter(complete.cases(.)) %>%
     mutate(instrument=instrument_name)
 
   return(list(
