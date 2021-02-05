@@ -83,7 +83,8 @@ pretty_irf<-function(data,shock_names,pretty_names=NULL,cum=F,confidence_type="m
             #ylab(variable_names_pretty[j])+
             xlab("")+
             theme_bw()+
-            theme(plot.margin = unit(c(0,5,0,5), "mm"))
+            theme(plot.margin = unit(c(0,5,0,5), "mm"))+
+            ylab(element_blank())
 
           for(a in 1:length(conf_level)){
             plot_temp<-plot_temp+
