@@ -64,8 +64,8 @@ SVARIV<-function(ydata, z, p, confidence, NWlags, norm, scale, horizons,ci_type=
       dplyr::rename("type"=L3,"level"=L1) %>%
       unique() %>%
       filter(row_number()!=1) %>%
-      arrange(value) %>%
-      dplyr::select(-Var1,-Var2)
+      arrange(value) #%>%
+      #dplyr::select(-Var1,-Var2)
 
     position=max(which(waldstat$type=="Waldstat"))
 
