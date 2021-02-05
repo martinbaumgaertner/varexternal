@@ -4,20 +4,14 @@ Title: Vector autoregression with external instruments
 Version: 0.2.0
 Author: Martin Baumgaertner
 Maintainer: Martin Baumgaertner <martin.baumgaertner1@gmail.com>
-Description: This Package estimates a Vector Autoregressive Model with an External Instrument in R. It is based on
-
-    “Inference in Structural Vector Autoregressions Identified With and External Instrument”, Montiel Olea, José L; Stock, James H.; and Watson, Mark W; Working Paper Columbia University. Link
-
-The corresponding Matlab code and sample data can be found here: https://github.com/jm4474/SVARIV
-For now two different Confidence Intervals (CI) for Impulse responses are included:
-
-    Delta Method
-
-    Anderson-Rubin confidence set
-
-    The confidence interval is robust to the construction of weak-instrument. Note that for strong instrument estimation the CI convergence to standard CI intervals.
-
-In addition the authors propose an modified Wald test as a test for weak instruments concerns which is also included in the package. Bootstrap procedures are currently not included.
+Description: This Package estimates a Vector Autoregressive Model with an External Instrument in R. 
+    It is based on 
+        “Inference in Structural Vector Autoregressions Identified With and External Instrument”, Montiel Olea, Jose L; Stock, James H.; and Watson, Mark W; Working Paper Columbia University.
+    The corresponding Matlab code and sample data can be found here: https://github.com/jm4474/SVARIV 
+    For now two different Confidence Intervals (CI) for Impulse responses are included: Delta Method, Anderson-Rubin confidence set 
+    The confidence interval is robust to the construction of weak-instrument. 
+    Note that for strong instrument estimation the CI convergence to standard CI intervals. 
+    In addition the authors propose an modified Wald test as a test for weak instruments concerns which is also included in the package. Bootstrap procedures are currently not included.
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
@@ -27,5 +21,6 @@ Depends: R (>= 3.5.0),
          expm,
          tidyverse,
          xts,
-         patchwork
-RoxygenNote: 7.0.0
+         patchwork,
+         reshape2
+RoxygenNote: 7.1.1

@@ -29,7 +29,7 @@
 #' horizons    = 20; #Number of horizons for the Impulse Response Functions(IRFs)
 #' confidence=c(0.6,0.9,0.95);
 #' data(oil)
-#' colnames(oil)<-c("a","b",d"c","d","year","month")
+#' colnames(oil)<-c("a","b","c","d","year","month")
 #' ydata<-oil[,1:3]
 #' z<-oil[,4]
 #' VAR<-SVARIV(ydata,z,p,confidence,NWlags,norm,scale,horizons,instrument_name="test")
@@ -65,7 +65,7 @@ SVARIV<-function(ydata, z, p, confidence, NWlags, norm, scale, horizons,ci_type=
       unique() %>%
       filter(row_number()!=1) %>%
       arrange(value) %>%
-      select(-Var1,-Var2)
+      dplyr::select(-Var1,-Var2)
 
     position=max(which(waldstat$type=="Waldstat"))
 
