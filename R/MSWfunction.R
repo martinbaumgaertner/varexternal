@@ -91,7 +91,6 @@ for(a in 1:length(confidence)){
   Dmethodlboundcum              = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
   Dmethoduboundcum              = matrix(0,n,horizons+1,dimnames = list(RForm$names,NULL))
 
-  j=1;ih=2
   for (j in 1:n) {
     for (ih in 1:(horizons + 1)) {
       ahat[j, ih] = (Ti %*% (RForm$Gamma[nvar, 1] ^ 2)) - (critval %*% W2[nvar, nvar])
