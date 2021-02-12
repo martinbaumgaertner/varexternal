@@ -80,7 +80,7 @@ SVARIV<-function(ydata, z, p, confidence, NWlags, norm, scale, horizons,ci_type=
       }
     }
     }else{
-      Stat<-NULL
+      waldstat<-NULL
     }
 
   irfs=as_tibble(reshape2::melt(InferenceMSW)) %>%
