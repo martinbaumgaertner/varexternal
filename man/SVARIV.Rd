@@ -35,7 +35,7 @@ SVARIV(
 
 \item{horizons}{Number of horizons for the Impulse Response Functions (does not include the impact or horizon 0)}
 
-\item{ci_type}{confidence intervals to include (choose from "msw" (Montiel, Stock and Watson, 2020), "delta" or "plugin")}
+\item{ci_type}{confidence intervals to include (choose from "msw" (Montiel, Stock and Watson, 2020), "delta" or "plugin"), just triggers msw waldtest. specify ci by prett.irf command}
 
 \item{print_wald}{Number of horizons for the Impulse Response Functions (does not include the impact or horizon 0)}
 

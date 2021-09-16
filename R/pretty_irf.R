@@ -56,7 +56,7 @@ pretty_irf<-function(data,shock_names,pretty_names=NULL,cum=F,confidence_type="m
 
   if(shock_sign=="negative"){
     data<-data %>%
-      mutate(value=value*(-1))
+      dplyr::mutate(value=value*(-1))
   }
 
   variable_n<-length(variable_names)
@@ -68,33 +68,33 @@ pretty_irf<-function(data,shock_names,pretty_names=NULL,cum=F,confidence_type="m
             dplyr::mutate(value=if(shock_sign=="negative") {value=value*(-1)
             }else{
               value=value}) %>%
-            filter(if (cum ==T) {str_detect(confi_type,"cum")
+            dplyr::filter(if (cum ==T) {stringr::str_detect(confi_type,"cum")
             } else {
-              !str_detect(confi_type,"cum")
+              !stringr::str_detect(confi_type,"cum")
             })%>%
-            filter(variable==variable_names[j],
+            dplyr::filter(variable==variable_names[j],
                    confi_type%in%confidence_type,
                    instrument==shock_names[i])%>%
-            pivot_wider(names_from = type, values_from = value)
+            tidyr::pivot_wider(names_from = type, values_from = value)
 
-          plot_temp<-ggplot()+
-            geom_line(data=da,aes(horizon,point,group=instrument,color=instrument),size=1.2)+
-            geom_hline(yintercept=0)+
+          plot_temp<-ggplot2::ggplot()+
+            ggplot2::geom_line(data=da,ggplot2::aes(horizon,point,group=instrument,color=instrument),size=1.2)+
+            ggplot2::geom_hline(yintercept=0)+
             #ylab(variable_names_pretty[j])+
-            xlab("")+
-            theme_bw()+
-            theme(plot.margin = unit(c(0,5,0,5), "mm"))+
+            ggplot2::xlab("")+
+            ggplot2::theme_bw()+
+            ggplot2::theme(plot.margin = unit(c(0,5,0,5), "mm"))+
             ylab(element_blank())
 
           for(a in 1:length(conf_level)){
             plot_temp<-plot_temp+
-              geom_ribbon(data=da %>% filter(confi_level==conf_level[a]),
-                          aes(horizon,ymin=lower,ymax=upper,group=instrument,fill=instrument),alpha=(0.5-a*0.1))
+              ggplot2::geom_ribbon(data=da %>% dplyr::filter(confi_level==conf_level[a]),
+                                   ggplot2::aes(horizon,ymin=lower,ymax=upper,group=instrument,fill=instrument),alpha=(0.5-a*0.1))
           }
           if(!is.null(manual_color)){#color depending on instrument
             plot_temp<-plot_temp+
-              scale_fill_manual(values = manual_color[which(names(manual_color)==shock_names[i])])+
-              scale_color_manual(values = manual_color[which(names(manual_color)==shock_names[i])])
+              ggplot2::scale_fill_manual(values = manual_color[which(names(manual_color)==shock_names[i])])+
+              ggplot2::scale_color_manual(values = manual_color[which(names(manual_color)==shock_names[i])])
           }
           if(j!=variable_n){# if not last row than no x-axis text (saved space between plots)
             plot_temp<-plot_temp+
@@ -131,5 +131,5 @@ pretty_irf<-function(data,shock_names,pretty_names=NULL,cum=F,confidence_type="m
           }
         }
       }
-    wrap_plots(plots,ncol=number_of_shocks,guides="collect",byrow=F)
+    patchwork::wrap_plots(plots,ncol=number_of_shocks,guides="collect",byrow=F)
 }

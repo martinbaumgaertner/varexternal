@@ -19,7 +19,7 @@ RForm_VAR<-function(TSL,p,W=NULL){
     if(i==1){
       aux<-xts::lag.xts(TSL,k=i)
     }else{
-      aux<-cbind(aux,lag.xts(TSL,k=i))
+      aux<-cbind(aux,xts::lag.xts(TSL,k=i))
     }
   }
   Y<-TSL[(p+1):nrow(TSL),]

@@ -25,7 +25,7 @@ MSWfunction <-function(confidence,nvar,scale,horizons,RForm) {
 for(a in 1:length(confidence)){
   confi<-confidence[a]
 
-  critval = qnorm(1 - ((1 - confi) / 2), 0, 1) ^ 2
+  critval = stats::qnorm(1 - ((1 - confi) / 2), 0, 1) ^ 2
   Caux        = cbind(diag(RForm$n), MARep(RForm$AL, RForm$p, horizons))
   C = array(Caux, c(RForm$n, RForm$n, horizons + 1))
   for (i in 2:dim(C)[3]) {

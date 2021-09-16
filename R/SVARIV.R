@@ -59,12 +59,12 @@ SVARIV<-function(ydata, z, p, confidence, NWlags, norm, scale, horizons,ci_type=
   InferenceMSW = MSWfunction(confidence,norm,scale,horizons,RForm)
 
   if(any(ci_type=="msw")){
-    waldstat<-melt(InferenceMSW) %>%
-      filter(L3 %in% c("critval","Waldstat")) %>%
+    waldstat<-reshape2::melt(InferenceMSW) %>%
+      dplyr::filter(L3 %in% c("critval","Waldstat")) %>%
       dplyr::rename("type"=L3,"level"=L1) %>%
       unique() %>%
-      filter(row_number()!=1) %>%
-      arrange(value) #%>%
+      dplyr::filter(row_number()!=1) %>%
+      dplyr::arrange(value) #%>%
       #dplyr::select(-Var1,-Var2)
 
     position=max(which(waldstat$type=="Waldstat"))
@@ -73,9 +73,9 @@ SVARIV<-function(ydata, z, p, confidence, NWlags, norm, scale, horizons,ci_type=
       if (print_wald) {
         message('NOTE: The Wald statistic for the covariance between the instrument and the normalized variable is:')
         message(round(waldstat %>%
-                        filter(type=="Waldstat") %>% select(value) %>% pull(),3))
+                        dplyr::filter(type=="Waldstat") %>% dplyr::select(value) %>% dplyr::pull(),3))
         message('Given the confidence level, if the Wald statistic is larger than: ',round(waldstat %>%
-                                                                                             filter(type=="critval") %>% select(value) %>% pull(),3),"(",confidence,")")
+                                                                                             dplyr::filter(type=="critval") %>% dplyr::select(value) %>% dplyr::pull(),3),"(",confidence,")")
         message('the weak-IV robust confidence set will be a bounded interval for every horizon (check "casedummy" if not).')
       }
     }
@@ -83,18 +83,17 @@ SVARIV<-function(ydata, z, p, confidence, NWlags, norm, scale, horizons,ci_type=
       waldstat<-NULL
     }
 
-  irfs=as_tibble(reshape2::melt(InferenceMSW)) %>%
+  irfs=dplyr::as_tibble(reshape2::melt(InferenceMSW)) %>%
     dplyr::rename("variable"=1,
                   "horizon"=2,
                   "type"=L3,
                   "confi_type"=L2,
                   "confi_level"=L1) %>%
-    filter(complete.cases(.)) %>%
-    mutate(instrument=instrument_name)
+    dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::mutate(instrument=instrument_name)
 
   return(list(
     irfs=irfs,
     waldstat=waldstat
   ))
 }
-?melt
