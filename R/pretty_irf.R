@@ -99,7 +99,7 @@ pretty_irf<-function(data,shock_names,pretty_names=NULL,cum=F,confidence_type="m
           if(j!=variable_n){# if not last row than no x-axis text (saved space between plots)
             plot_temp<-plot_temp+
               theme(axis.text.x=element_blank(),
-                    axis.title.x=element_blank())
+                    axis.title.x="")
           }
           if(i==1){ #if first instrument include variable names
             plot_temp<-plot_temp+
