@@ -81,7 +81,7 @@ pretty_irf<-function(data,shock_names,pretty_names=NULL,cum=F,confidence_type="m
             ggplot2::geom_line(data=da,ggplot2::aes(horizon,point,group=instrument,color=instrument),size=1.2)+
             ggplot2::geom_hline(yintercept=0)+
             #ylab(variable_names_pretty[j])+
-            ggplot2::xlab("Months")+
+            ggplot2::xlab("")+
             ggplot2::theme_bw()+
             ggplot2::theme(plot.margin = unit(c(0,5,0,5), "mm"))+
             ylab(element_blank())
@@ -98,8 +98,11 @@ pretty_irf<-function(data,shock_names,pretty_names=NULL,cum=F,confidence_type="m
           }
           if(j!=variable_n){# if not last row than no x-axis text (saved space between plots)
             plot_temp<-plot_temp+
-              theme(axis.text.x=element_blank(),
-                    axis.title.x="")
+              theme(axis.text.x=element_blank())
+          }
+          if(j==variable_n){# if not last row than no x-axis text (saved space between plots)
+            plot_temp<-plot_temp+
+              ggplot2::xlab("Months")
           }
           if(i==1){ #if first instrument include variable names
             plot_temp<-plot_temp+
