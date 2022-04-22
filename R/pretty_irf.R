@@ -36,7 +36,7 @@
 #' @export
 pretty_irf<-function(data,shock_names,pretty_names=NULL,cum=F,confidence_type="msw",
                      manual_color=NULL,legend=F,title=NULL,same_scale=T,
-                     shock_sign="positive"
+                     shock_sign="positive",xlab_title="Month"
                      ){
   if(any(sapply(data, is.list))){
     number_of_shocks<-length(data)
@@ -102,7 +102,7 @@ pretty_irf<-function(data,shock_names,pretty_names=NULL,cum=F,confidence_type="m
           }
           if(j==variable_n){# if not last row than no x-axis text (saved space between plots)
             plot_temp<-plot_temp+
-              ggplot2::xlab("Months")
+              ggplot2::xlab(paste(xlab_title))
           }
           if(i==1){ #if first instrument include variable names
             plot_temp<-plot_temp+
